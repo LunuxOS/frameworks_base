@@ -839,6 +839,8 @@ public class StatusBar extends SystemUI implements DemoMode,
         createAndAddWindows();
 
         mSettingsObserver.onChange(false); // set up
+        mLunuxOSSettingsObserver.observe();
+	mLunuxOSSettingsObserver.update();
         mCommandQueue.disable(switches[0], switches[6], false /* animate */);
         setSystemUiVisibility(switches[1], switches[7], switches[8], 0xffffffff,
                 fullscreenStackBounds, dockedStackBounds);
@@ -2875,6 +2877,28 @@ public class StatusBar extends SystemUI implements DemoMode,
             }
         }
 
+    }
+ 
+    @Override
+    public void toggleNavigationBar(boolean enable) {
+        if (enable) {
+            if (mNavigationBarView == null) {
+                try {
+                    createNavigationBar();
+                    setDoubleTapNavbar();
+                } catch (Exception e) {
+                    // monkey tapping the toggle more times and too fast
+                }
+            }
+        } else {
+            if (mNavigationBarView != null){
+                FragmentHostManager fm = FragmentHostManager.get(mNavigationBarView);
+                mWindowManager.removeViewImmediate(mNavigationBarView);
+                mNavigationBarView = null;
+                fm.getFragmentManager().beginTransaction().remove(mNavigationBar).commit();
+                mNavigationBar = null;
+            }
+        }
     }
 
     boolean panelsEnabled() {
@@ -5345,6 +5369,37 @@ public class StatusBar extends SystemUI implements DemoMode,
             updateNotifications();
         }
     };
+ 
+    private LunuxOSSettingsObserver mLunuxOSSettingsObserver = new LunuxOSSettingsObserver(mHandler);
+    private class LunuxOSSettingsObserver extends ContentObserver {
+        LunuxOSSettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_NAVBAR),
+                    false, this, UserHandle.USER_ALL);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_NAVBAR))) {
+                setDoubleTapNavbar();
+            }
+        }
+
+        public void update() {
+            setDoubleTapNavbar();
+        }
+    }
+
+    private void setDoubleTapNavbar() {
+        if (mNavigationBar != null) {
+            mNavigationBar.setDoubleTapToSleep();
+        }
+    }
 
     private RemoteViews.OnClickHandler mOnClickHandler = new RemoteViews.OnClickHandler() {
 

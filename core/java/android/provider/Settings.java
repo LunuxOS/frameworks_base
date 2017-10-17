@@ -3896,6 +3896,12 @@ public final class Settings {
          * it to PRIVATE_SETTINGS below. Also add a validator that can validate
          * the setting value. See an example above.
          */
+ 
+	/**
+         * Double tap on navbar to sleep
+         * @hide
+         */
+	public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -4054,6 +4060,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(LOCK_TO_APP_ENABLED);
             PRIVATE_SETTINGS.add(EGG_MODE);
             PRIVATE_SETTINGS.add(SHOW_BATTERY_PERCENT);
+            PRIVATE_SETTINGS.add(DOUBLE_TAP_SLEEP_NAVBAR);
         }
 
         /**
@@ -6967,6 +6974,12 @@ public final class Settings {
          * @hide
          */
         public static final String NOTIFICATION_BADGING = "notification_badging";
+ 
+	/**
+         * Whether to enable navigation bar
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_ENABLED = "navigation_bar_enabled";
 
         /**
          * This are the settings to be backed up.
